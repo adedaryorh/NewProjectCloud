@@ -1,0 +1,7 @@
+{
+    "MONGO_URI": "mongodb+srv://Yhomi:ace18081996@cluster0.yay1n.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+    "LOCAL_MONGO": "mongodb://localhost:27017/shop",
+    "JWT_SECRET": "secretetokenforjwt1234567890!@#%^&*()_+\\///",
+    "GITHUB_CLIENTID": "deee1a3f3c583e84635b",
+    "GITHUB_SECRET": " 8d3dcc58cc3d2e3a476f0c9ecb2612730c62c1c7"
+}
