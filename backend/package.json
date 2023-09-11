@@ -1,12 +1,13 @@
 {
   "name": "shop",
   "version": "1.0.0",
-  "description": "",
+  "description": "This is just a test.",
   "main": "index.js",
   "repository": "https://github.com/adedaryorh/NewProjectCloud",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "build": "npm start"
   },
   "keywords": [],
   "author": "",
