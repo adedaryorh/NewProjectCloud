@@ -51,6 +51,35 @@ commands:
             fi
            
 jobs:
+#build and push image to docker hub
+  build-and-push-node1:
+    machine: true
+    steps:
+      - checkout:
+      - run:
+          name: Build Docker container for V1
+          command: |
+            echo
+            sudo curl -LO https://nodejs.org/dist/v18.0.0/node-v18.0.0-linux-x64.tar.xz
+            sudo tar -xvf node-v18.0.0-linux-x64.tar.xz
+            sudo cp -r node-v18.0.0-linux-x64/.{bin, include,lib, share} /usr/
+            node --version => v18.0.0
+            sudo apt install nodejs
+            docker build -t adedaryorh/capstone:v1 .
+            docker login -u adedaryorh -p $DOCKERPASS
+            docker push adedaryorh/capstone:v1
+
+  lint-app:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - run:
+          name: images lint
+          command: |
+            npm install
+            npm run lint
+
   build-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -215,7 +244,7 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints:
-            - 'd0:0c:ed:09:1e:2c:3d:3d:9b:21:79:99:ae:6b:98:cc'
+            - '0d:48:fa:01:2e:84:17:40:02:9e:d0:0d:f5:ec:34:77:d5:b4:ac:d6'
       - run:
           name: Install deps
           command: |
@@ -242,7 +271,7 @@ jobs:
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints: ["d0:0c:ed:09:1e:2c:3d:3d:9b:21:79:99:ae:6b:98:cc"]
+          fingerprints: ["0d:48:fa:01:2e:84:17:40:02:9e:d0:0d:f5:ec:34:77:d5:b4:ac:d6"]
       - attach_workspace:
           at: ~/
       - run:
@@ -303,8 +332,6 @@ jobs:
 
   deploy-frontend:
     docker:
-      # Docker image here that supports AWS CLI
-      # - image: amazon/aws-cli
       - image: python:3.10-alpine3.16
     steps:
       # Checkout code from git
@@ -345,7 +372,7 @@ jobs:
       - checkout
       # Add ssh keys with fingerprint
       - add_ssh_keys:
-          fingerprints: ["d0:0c:ed:09:1e:2c:3d:3d:9b:21:79:99:ae:6b:98:cc"]
+          fingerprints: ["0d:48:fa:01:2e:84:17:40:02:9e:d0:0d:f5:ec:34:77:d5:b4:ac:d6"]
       - attach_workspace:
             at: ~/
       - run:
@@ -479,7 +506,7 @@ jobs:
 #     steps:
 #       - checkout
 #       - add_ssh_keys:
-#           fingerprints:["d0:0c:ed:09:1e:2c:3d:3d:9b:21:79:99:ae:6b:98:cc"]
+#           fingerprints:["0d:48:fa:01:2e:84:17:40:02:9e:d0:0d:f5:ec:34:77:d5:b4:ac:d6"]
 #       - attach_workspace:
 #           at: ~/
 #       -run:
@@ -504,6 +531,7 @@ jobs:
 workflows:
   default:
     jobs:
+      - build-and-push-node1
       - build-frontend
       - build-backend
       - test-frontend:
