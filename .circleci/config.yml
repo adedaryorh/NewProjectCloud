@@ -52,22 +52,6 @@ commands:
            
 jobs:
 #build and push image to docker hub
-  build-and-push-node1:
-    machine: true
-    steps:
-      - checkout:
-      - run:
-          name: Build Docker container for V1
-          command: |
-            echo
-            sudo curl -LO https://nodejs.org/dist/v18.0.0/node-v18.0.0-linux-x64.tar.xz
-            sudo tar -xvf node-v18.0.0-linux-x64.tar.xz
-            sudo cp -r node-v18.0.0-linux-x64/.{bin, include,lib, share} /usr/
-            node --version => v18.0.0
-            sudo apt install nodejs
-            docker build -t adedaryorh/capstone:v1 .
-            docker login -u adedaryorh -p $DOCKERPASS
-            docker push adedaryorh/capstone:v1
 
   lint-app:
     docker:
@@ -515,7 +499,6 @@ workflows:
   default:
     jobs:
       - lint-app
-      - build-and-push-node1
       - build-backend
       - test-backend:
           requires: [build-backend]
