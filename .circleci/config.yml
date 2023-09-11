@@ -79,23 +79,6 @@ jobs:
           command: |
             npm install
             npm run lint
-
-  build-frontend:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - restore_cache:
-          keys: [frontend-build]
-      - run:
-          name: Build front-end
-          command: |
-            cd frontend
-            npm install
-            npm run build
-      - save_cache:
-          paths: [frontend/node_modules]
-          key: frontend-build
           
   build-backend:
     docker:
@@ -531,19 +514,15 @@ jobs:
 workflows:
   default:
     jobs:
+      - lint-app
       - build-and-push-node1
-      - build-frontend
       - build-backend
-      - test-frontend:
-          requires: [build-frontend]
       - test-backend:
           requires: [build-backend]
       - scan-backend:
           requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
       - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          requires: [test-backend, scan-backend]
           filters:
            branches:
             only: [master]
@@ -558,7 +537,7 @@ workflows:
       - deploy-backend:
           requires: [run-migrations]
       - smoke-test:
-          requires: [deploy-backend, deploy-frontend]
+          requires: [deploy-backend]
       - cloudfront-update:
           requires: [smoke-test]
       - cleanup:

@@ -1,7 +1,7 @@
 {
-  "name": "udapeople_project3-master",
+  "name": "NewProjectCloud-master",
   "version": "1.0.0",
-  "description": "[![CircleCI](https://dl.circleci.com/status-badge/img/gh/adedaryorh/Udapeople_project3/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/adedaryorh/Udapeople_project3/tree/master)",
+  "description": "[![CircleCI](https://dl.circleci.com/status-badge/img/gh/adedaryorh/NewProjectCloud/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/adedaryorh/NewProjectCloud/tree/master)",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
