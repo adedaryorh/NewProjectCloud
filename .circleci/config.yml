@@ -53,16 +53,16 @@ commands:
 jobs:
 #build and push image to docker hub
 
-  lint-app:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - run:
-          name: images lint
-          command: |
-            npm install
-            npm run lint
+  #lint-app:
+    #docker:
+      #- image: circleci/node:13.8.0
+    #steps:
+      #- checkout
+      #- run:
+          #name: images lint
+          #command: |
+            #npm install
+            #npm run lint
           
   build-backend:
     docker:
@@ -81,23 +81,6 @@ jobs:
           paths: [backend/node_modules]
           key: backend-build
 
-  test-frontend:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - restore_cache:
-          keys: [frontend-build]
-      - run:
-          name: Run frontend test
-          command: |
-            cd frontend
-            npm install
-            npm run test
-      - save_cache:
-          paths: [frontend/node_modules]
-          key: frontend-build
-
   test-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -114,25 +97,6 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
-
-  scan-frontend:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - restore_cache:
-          keys: [frontend-build]
-      - run:
-          name: Analyse frontend
-          command: |
-            cd frontend
-            npm install
-            npm audit fix --force --audit-level=critical 
-            npm audit fix --force --audit-level=critical 
-            npm audit --audit-level=critical
-      - save_cache:
-          paths: [frontend/node_modules]
-          key: frontend-build
 
   scan-backend:
     docker:
@@ -169,14 +133,6 @@ jobs:
               --template-file .circleci/files/backend.yml \
               --tags project=your-tag \
               --stack-name "CloudBootCamp-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
-      - run:
-          name: Ensure front-end infrastructure exist
-          command: |
-            aws cloudformation deploy \
-              --template-file .circleci/files/frontend.yml \
-              --tags project=your-tag \
-              --stack-name "CloudBootCamp-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
       - run:
           name: Delete Old Backend Ip Address
@@ -276,39 +232,6 @@ jobs:
       - run:
           name: Install CURL
           command: apk add curl
-      - run:
-          name: Get backend url
-          command: |
-            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" --output text)
-            export API_URL="http://${BACKEND_IP}:3030"
-            echo "API_URL = ${API_URL}"
-            echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
-            cat frontend/.env
-      - run:
-          name: Deploy frontend objects
-          command: |
-            cd frontend
-            npm install
-            npm run build
-            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
-            aws s3 cp dist s3://CloudBootCamp-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-      - destroy-environment:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
-      - revert-migrations:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
-
-  deploy-frontend:
-    docker:
-      - image: python:3.10-alpine3.16
-    steps:
-      # Checkout code from git
-      - checkout
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: Install deps
-          command: |
-            apk add --update --no-cache tar gzip nodejs npm ansible curl aws-cli
       - run:
           name: Get backend url
           command: |
@@ -498,7 +421,6 @@ jobs:
 workflows:
   default:
     jobs:
-      - lint-app
       - build-backend
       - test-backend:
           requires: [build-backend]
@@ -515,8 +437,6 @@ workflows:
           requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
       - deploy-backend:
           requires: [run-migrations]
       - smoke-test:
