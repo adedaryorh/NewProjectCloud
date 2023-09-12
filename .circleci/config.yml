@@ -47,49 +47,49 @@ commands:
             fi
 
 jobs:
-  build-backend:
-    docker:
-      - image: cimg/node:20.5.0
-    working_directory: ~/Downloads/BootcampProject/backend
-    steps:
-      - checkout
-      - restore_cache:
-          key: backend-deps-{{ checksum "backend/package-lock.json" }}
-          paths:
-            - backend/node_modules
-      - run:
-          name: Back-end build
-          command: |
-            cd backend
-            npm cache clean -f
-            npm install -g npm@latest
-            npm install
-            npm run build
-      - save_cache:
-          key: backend-deps-{{ checksum "backend/package-lock.json" }}
-          paths:
-            - backend/node_modules
+  # build-backend:
+  #   docker:
+  #     - image: cimg/node:20.5.0
+  #   working_directory: ~/Downloads/BootcampProject/backend
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         key: backend-deps-{{ checksum "backend/package-lock.json" }}
+  #         paths:
+  #           - backend/node_modules
+  #     - run:
+  #         name: Back-end build
+  #         command: |
+  #           cd backend
+  #           npm cache clean -f
+  #           npm install -g npm@latest
+  #           npm install
+  #           npm run build
+  #     - save_cache:
+  #         key: backend-deps-{{ checksum "backend/package-lock.json" }}
+  #         paths:
+  #           - backend/node_modules
 
-  test-backend:
-    docker:
-      - image: cimg/node:13.8.0
-    working_directory: ~/Downloads/BootcampProject/backend
-    steps:
-      - checkout
-      - restore_cache:
-          key: backend-deps-{{ checksum "backend/package-lock.json" }}
-          paths:
-            - backend/node_modules
-      - run:
-          name: Run backend test
-          command: |
-            cd backend
-            npm install
-            npm run test
-      - save_cache:
-          key: backend-deps-{{ checksum "backend/package-lock.json" }}
-          paths:
-            - backend/node_modules
+  # test-backend:
+  #   docker:
+  #     - image: cimg/node:13.8.0
+  #   working_directory: ~/Downloads/BootcampProject/backend
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         key: backend-deps-{{ checksum "backend/package-lock.json" }}
+  #         paths:
+  #           - backend/node_modules
+  #     - run:
+  #         name: Run backend test
+  #         command: |
+  #           cd backend
+  #           npm install
+  #           npm run test
+  #     - save_cache:
+  #         key: backend-deps-{{ checksum "backend/package-lock.json" }}
+  #         paths:
+  #           - backend/node_modules
 
   scan-backend:
     docker:
@@ -342,31 +342,29 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-backend
+      # - build-backend
       # - test-backend
-      # - scan-backend
-      # - add-prometheus-node-exporter:
-      #     requires:
-      #       - scan-backend
-      # - configure-infrastructure:
-      #     requires:
-      #       - add-prometheus-node-exporter
-      # - run-migrations:
-      #     requires:
-      #       - configure-infrastructure
-      # - lint-and-capture-screenshots:
-      #     requires:
-      #       - test-backend
-      # - build-and-push-to-ecr:
-      #     requires:
-      #       - lint-and-capture-screenshots
-      # - deploy-backend:
-      #     requires:
-      #       - run-migrations
-      # - smoke-test:
-      #     requires:
-      #       - deploy-backend
-      # - cloudfront-update:
-      #     requires:
-      #       - smoke-test
-      # - cleanup
+      - scan-backend
+      - add-prometheus-node-exporter:
+          requires:
+            - scan-backend
+      - configure-infrastructure:
+          requires:
+            - add-prometheus-node-exporter
+      - run-migrations:
+          requires:
+            - configure-infrastructure
+      - lint-and-capture-screenshots 
+      - build-and-push-to-ecr:
+          requires:
+            - lint-and-capture-screenshots
+      - deploy-backend:
+          requires:
+            - run-migrations
+      - smoke-test:
+          requires:
+            - deploy-backend
+      - cloudfront-update:
+          requires:
+            - smoke-test
+      - cleanup
