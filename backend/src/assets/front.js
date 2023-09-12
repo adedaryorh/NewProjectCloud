@@ -198,10 +198,8 @@ document.querySelector(".pay").addEventListener("click", (e) => {
   // Get input cash received field value, set to number
   let amount = document.querySelector(".received").value;
   amount *= 1;
-
   // Set cashReturn to return value of pay()
   let cashReturn = pay(amount);
-
   let paymentSummary = document.querySelector(".pay-summary");
   let div = document.createElement("div");
 
@@ -228,50 +226,42 @@ document.querySelector(".pay").addEventListener("click", (e) => {
 });
 
 /* End all items from cart */
-// const currencySelector = document.getElementById("currency-selector");
-// currencySelector.addEventListener("change", () => {
-//   const selectedCurrency = currencySelector.value;
-//   updatePrices(selectedCurrency);
-// });
+const currencySelector = document.getElementById("currency-selector");
+currencySelector.addEventListener("change", () => {
+  const selectedCurrency = currencySelector.value;
+  updatePrices(selectedCurrency);
+});
 
 /* Begin currency converter */
-// function currencyBuilder(){
-//     let currencyPicker = document.querySelector('.currency-selector');
-//     let select = document.createElement("select");
-//     select.classList.add("currency-select");
-//     select.innerHTML = `<option value="USD">USD</option>
-//                         <option value="EUR">EUR</option>
-//                         <option value="YEN">YEN</option>`;
-//     currencyPicker.append(select);
-// }
-// currencyBuilder();
-// function formatPrice(price, currency) {
-//   if (currency === "USD") {
-//     return `$${price.toFixed(2)}`;
-//   } else if (currency === "EUR") {
-//     return `€${price.toFixed(2)}`;
-//   } else if (currency === "YEN") {
-//     return `¥${price.toFixed(0)}`;
-//   }
-// }
-// document.querySelector('.currency-select').addEventListener('change', function handleChange(event) {
-//     switch(event.target.value){
-//         case 'EUR':
-//             currencySymbol = '€';
-//             break;
-//         case 'YEN':
-//             currencySymbol = '¥';
-//             break;
-//         default:
-//             currencySymbol = '$';
-//             break;
-//      }
+function currencyBuilder(){
+    let currencyPicker = document.querySelector('.currency-selector');
+    let select = document.createElement("select");
+    select.classList.add("currency-select");
+    select.innerHTML = `<option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                        <option value="YEN">YEN</option>`;
+    currencyPicker.append(select);
+}
+currencyBuilder();
 
-//     currency(event.target.value);
-//     drawshopItemsData();
-//     drawCart();
-//     drawCheckout();
-// });
+document.querySelector('.currency-select').addEventListener('change', function handleChange(event) {
+    switch(event.target.value){
+        case 'EUR':
+            currencySymbol = '€';
+            break;
+        case 'YEN':
+            currencySymbol = '¥';
+            break;
+        default:
+            currencySymbol = '$';
+            break;
+     }
+
+    currency(event.target.value);
+    drawshopItemsData();
+    drawCart();
+    drawCheckout();
+});
 /* End currency converter */
 /* Standout suggestions */
 /* Begin remove all items from cart */
@@ -290,4 +280,14 @@ document.querySelector('.empty-btn').addEventListener('click', (e) => {
         drawCheckout();
     }
 })
+
+// function formatPrice(price, currency) {
+//   if (currency === "USD") {
+//     return `$${price.toFixed(2)}`;
+//   } else if (currency === "EUR") {
+//     return `€${price.toFixed(2)}`;
+//   } else if (currency === "YEN") {
+//     return `¥${price.toFixed(0)}`;
+//   }
+// }
 /* End standout suggestions */

@@ -164,13 +164,13 @@ function pay(amount) {
    Run the following command in terminal to run tests
    npm run test
 */
-// function updatePrices(currency) {
-//   let productPrices = document.querySelectorAll(".product-price");
-//   productPrices.forEach((priceElement) => {
-//     let productPrice = parseFloat(priceElement.dataset.price);
-//     priceElement.textContent = formatPrice(productPrice, currency);
-//   });
-// }
+function updatePrices(currency) {
+  let productPrices = document.querySelectorAll(".product-price");
+  productPrices.forEach((priceElement) => {
+    let productPrice = parseFloat(priceElement.dataset.price);
+    priceElement.textContent = formatPrice(productPrice, currency);
+  });
+}
 
 module.exports = {
   shopItemsData,
@@ -182,5 +182,5 @@ module.exports = {
   cartTotal,
   pay,
   emptyCart,
-  // currency
-};
+  currency
+}
