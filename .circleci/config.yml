@@ -161,7 +161,7 @@ jobs:
               chmod +x ./kubectl
               pip3 install awscli --upgrade
               aws --version
-              aws ecr get-login-password --region us-east-2 | docker login public.ecr.aws/u9l9p1w9/adedaryorh
+              aws ecr get-login-password --region us-east-2 | docker login --username adedaryorh --password-stdin public.ecr.aws/u9l9p1w9/adedaryorh
               aws eks update-kubeconfig --name my-cluster
               LATEST_SHA=$(git rev-parse HEAD)
               docker build -t express-eks:$LATEST_SHA .
