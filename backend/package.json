@@ -4,11 +4,16 @@
   "description": "shopping cart project with tests",
   "main": "index.js",
   "scripts": {
+    "build": "npm start",
     "test": "jest",
     "start": "live-server --port=3000 src"
   },
   "author": "",
   "license": "SEE LICENSE IN LICENSE.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adedaryorh/NewProjectCloud.git"
+  },
   "dependencies": {
     "jest": "^27.5.1",
     "live-server": "^1.1.0"

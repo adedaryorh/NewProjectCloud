@@ -147,31 +147,32 @@ jobs:
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
-  deploy_to_production:
-    docker:
-      - image: cimg/python:3.10.2
-    steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: false
-      - run:
-          name: Deploy to EKS
-          command: |
-              curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-              chmod +x ./kubectl
-              pip3 install awscli --upgrade
-              aws --version
-              aws configure set aws_access_key_id AKIAQ6XAD3Y3PUGS426B
-              aws configure set aws_secret_access_key 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
-              aws configure set region us-east-2
-              aws ecr get-login-password --region us-east-2 | docker login --username adedaryorh --password-stdin public.ecr.aws/u9l9p1w9/adedaryorh
-              aws eks update-kubeconfig --name my-cluster --region us-east-2
+  # deploy_to_production:
+  #   docker:
+  #     - image: cimg/python:3.10.2
+  #   steps:
+  #     - checkout
+  #     - setup_remote_docker:
+  #         docker_layer_caching: false
+  #     - run:
+  #         name: Deploy to EKS
+  #         command: |
+  #             curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+  #             chmod +x ./kubectl
+  #             pip3 install awscli --upgrade
+  #             aws --version
+  #             aws configure set aws_access_key_id AKIAQ6XAD3Y3PUGS426B
+  #             aws configure set aws_secret_access_key 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
+  #             aws configure set region us-east-2
+  #             aws ecr get-login-password --region us-east-2 | docker login --username adedaryorh --password-stdin public.ecr.aws/u9l9p1w9/adedaryorh
 
-              LATEST_SHA=$(git rev-parse HEAD)
-              docker build -t express-eks:$LATEST_SHA .
-              docker tag express-eks:$LATEST_SHA 207100238581.dkr.ecr.us-east-2.amazonaws.com/express-eks:$LATEST_SHA
-              docker push 207100238581.dkr.ecr.us-east-2.amazonaws.com/express-eks:$LATEST_SHA
-              ./kubectl set image deployment/myapp myapp=207100238581.dkr.ecr.us-east-2.amazonaws.com/express-eks:$LATEST_SHA -n default
+  #             aws eks update-kubeconfig --name my-cluster --region us-east-2
+
+  #             LATEST_SHA=$(git rev-parse HEAD)
+  #             docker build -t express-eks:$LATEST_SHA .
+  #             docker tag express-eks:$LATEST_SHA 207100238581.dkr.ecr.us-east-2.amazonaws.com/express-eks:$LATEST_SHA
+  #             docker push 207100238581.dkr.ecr.us-east-2.amazonaws.com/express-eks:$LATEST_SHA
+  #             ./kubectl set image deployment/myapp myapp=207100238581.dkr.ecr.us-east-2.amazonaws.com/express-eks:$LATEST_SHA -n default
 
   add-prometheus-node-exporter:
     docker:
@@ -444,7 +445,7 @@ workflows:
           filters:
            branches:
             only: [master]
-      - deploy_to_production
+      # - deploy_to_production
       - add-prometheus-node-exporter:
           requires: [deploy-infrastructure]
       - configure-infrastructure:
