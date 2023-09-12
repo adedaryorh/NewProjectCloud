@@ -1,7 +1,8 @@
 version: 2.1
 
-# orbs:
-#   slack: circleci/slack@4.1
+orbs:
+   slack: circleci/slack@4.1
+   node: circleci/node@4.7
 
 parameters:
   workflow_id:
@@ -50,20 +51,7 @@ commands:
               npm run migrations:revert 
             fi
            
-jobs:
-#build and push image to docker hub
-
-  #lint-app:
-    #docker:
-      #- image: circleci/node:13.8.0
-    #steps:
-      #- checkout
-      #- run:
-          #name: images lint
-          #command: |
-            #npm install
-            #npm run lint
-          
+jobs:     
   build-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -160,6 +148,28 @@ jobs:
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
+  deploy_to_production:
+    docker:
+      - image: cimg/python:3.10.2
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: false
+      - run:
+          name: Deploy to EKS
+          command: |
+              curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+              chmod +x ./kubectl
+              pip3 install awscli --upgrade
+              aws --version
+              aws ecr get-login-password --region us-east-2 | docker login --username adedaryorh --password-stdin 207100238581.dkr.ecr.us-east-2.amazonaws.com
+              aws eks update-kubeconfig --name my-cluster
+              LATEST_SHA=$(git rev-parse HEAD)
+              docker build -t express-eks:$LATEST_SHA .
+              docker tag express-eks:$LATEST_SHA 207100238581.dkr.ecr.us-east-2.amazonaws.com/express-eks:$LATEST_SHA
+              docker push 207100238581.dkr.ecr.us-east-2.amazonaws.com/express-eks:$LATEST_SHA
+              ./kubectl set image deployment/myapp myapp=207100238581.dkr.ecr.us-east-2.amazonaws.com/express-eks:$LATEST_SHA -n default
+
   add-prometheus-node-exporter:
     docker:
       - image: python:3.10-alpine3.16
@@ -167,7 +177,7 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints:
-            - '0d:48:fa:01:2e:84:17:40:02:9e:d0:0d:f5:ec:34:77:d5:b4:ac:d6'
+            - 'a7:f2:0c:5d:9d:14:31:a9:27:39:42:51:a1:bb:8b:03:0a:a5:e9:66'
       - run:
           name: Install deps
           command: |
@@ -194,7 +204,7 @@ jobs:
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints: ["0d:48:fa:01:2e:84:17:40:02:9e:d0:0d:f5:ec:34:77:d5:b4:ac:d6"]
+          fingerprints: ["a7:f2:0c:5d:9d:14:31:a9:27:39:42:51:a1:bb:8b:03:0a:a5:e9:66"]
       - attach_workspace:
           at: ~/
       - run:
@@ -262,7 +272,7 @@ jobs:
       - checkout
       # Add ssh keys with fingerprint
       - add_ssh_keys:
-          fingerprints: ["0d:48:fa:01:2e:84:17:40:02:9e:d0:0d:f5:ec:34:77:d5:b4:ac:d6"]
+          fingerprints: ["a7:f2:0c:5d:9d:14:31:a9:27:39:42:51:a1:bb:8b:03:0a:a5:e9:66"]
       - attach_workspace:
             at: ~/
       - run:
@@ -396,7 +406,7 @@ jobs:
 #     steps:
 #       - checkout
 #       - add_ssh_keys:
-#           fingerprints:["0d:48:fa:01:2e:84:17:40:02:9e:d0:0d:f5:ec:34:77:d5:b4:ac:d6"]
+#           fingerprints:["a7:f2:0c:5d:9d:14:31:a9:27:39:42:51:a1:bb:8b:03:0a:a5:e9:66"]
 #       - attach_workspace:
 #           at: ~/
 #       -run:
@@ -431,6 +441,7 @@ workflows:
           filters:
            branches:
             only: [master]
+      - deploy_to_production
       - add-prometheus-node-exporter:
           requires: [deploy-infrastructure]
       - configure-infrastructure:
