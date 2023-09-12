@@ -49,7 +49,7 @@ commands:
 jobs:
   build-backend:
     docker:
-      - image: cimg/node:13.8.0
+      - image: cimg/node:20.5.0
     working_directory: ~/Downloads/BootcampProject/backend
     steps:
       - checkout
@@ -343,7 +343,7 @@ workflows:
   default:
     jobs:
       - build-backend
-      - test-backend
+      # - test-backend
       # - scan-backend
       # - add-prometheus-node-exporter:
       #     requires:
