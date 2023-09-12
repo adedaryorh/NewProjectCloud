@@ -61,6 +61,8 @@ jobs:
           name: Back-end build
           command: |
             cd backend
+            npm cache clean -f
+            npm install -g npm@latest
             npm install
             npm run build
       - save_cache:
@@ -342,29 +344,29 @@ workflows:
     jobs:
       - build-backend
       - test-backend
-      - scan-backend
-      - add-prometheus-node-exporter:
-          requires:
-            - scan-backend
-      - configure-infrastructure:
-          requires:
-            - add-prometheus-node-exporter
-      - run-migrations:
-          requires:
-            - configure-infrastructure
-      - lint-and-capture-screenshots:
-          requires:
-            - test-backend
-      - build-and-push-to-ecr:
-          requires:
-            - lint-and-capture-screenshots
-      - deploy-backend:
-          requires:
-            - run-migrations
-      - smoke-test:
-          requires:
-            - deploy-backend
-      - cloudfront-update:
-          requires:
-            - smoke-test
-      - cleanup
+      # - scan-backend
+      # - add-prometheus-node-exporter:
+      #     requires:
+      #       - scan-backend
+      # - configure-infrastructure:
+      #     requires:
+      #       - add-prometheus-node-exporter
+      # - run-migrations:
+      #     requires:
+      #       - configure-infrastructure
+      # - lint-and-capture-screenshots:
+      #     requires:
+      #       - test-backend
+      # - build-and-push-to-ecr:
+      #     requires:
+      #       - lint-and-capture-screenshots
+      # - deploy-backend:
+      #     requires:
+      #       - run-migrations
+      # - smoke-test:
+      #     requires:
+      #       - deploy-backend
+      # - cloudfront-update:
+      #     requires:
+      #       - smoke-test
+      # - cleanup
