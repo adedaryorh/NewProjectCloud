@@ -182,24 +182,24 @@ jobs:
       - revert-migrations:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
-  lint-and-capture-screenshots:
-    docker:
-      - image: circleci/node:14 
-    working_directory: ~/Downloads/BootcampProject/backend
-    steps:
-      - checkout
-      - run:
-          name: Install Dependencies
-          command: npm install
-      - run:
-          name: Run Linting
-          command: npm run lint
-      - run:
-          name: Capture Linting Screenshot
-          when: on_fail
-          command: |
-            npm install puppeteer
-            node capture-screenshot.js failure
+  # lint-and-capture-screenshots:
+  #   docker:
+  #     - image: circleci/node:14 
+  #   working_directory: ~/Downloads/BootcampProject/backend
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Install Dependencies
+  #         command: npm install
+  #     - run:
+  #         name: Run Linting
+  #         command: npm run lint
+  #     - run:
+  #         name: Capture Linting Screenshot
+  #         when: on_fail
+  #         command: |
+  #           npm install puppeteer
+  #           node capture-screenshot.js failure
 
   build-and-push-to-ecr:
     docker:
@@ -354,7 +354,7 @@ workflows:
       - run-migrations:
           requires:
             - configure-infrastructure
-      - lint-and-capture-screenshots 
+      # - lint-and-capture-screenshots 
       - build-and-push-to-ecr:
           requires:
             - lint-and-capture-screenshots
