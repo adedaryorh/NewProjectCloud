@@ -355,9 +355,7 @@ workflows:
           requires:
             - configure-infrastructure
       # - lint-and-capture-screenshots 
-      - build-and-push-to-ecr:
-          requires:
-            - lint-and-capture-screenshots
+      - build-and-push-to-ecr
       - deploy-backend:
           requires:
             - run-migrations
